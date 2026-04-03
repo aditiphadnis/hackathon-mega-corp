@@ -1,9 +1,13 @@
 services:
-  mcp:
-    build: .
-    command: adk web --host 0.0.0.0 --port 8000
+
+  # ── ADK API server ─────────────────────────────────────────────────────────
+  adk-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.adk
+    command: adk api_server --host 0.0.0.0 --port 8000 agent
     ports:
-      - "8060:8000"
+      - "8000:8000"
     volumes:
       - ./ai-agent-use-cases-485910-6440efc64360.json:/secrets/sa-key.json:ro
     environment:
@@ -12,3 +16,23 @@ services:
       BQ_DATASET: hackathon_mega_corp_universe
       PORT: "8000"
       HOST: "0.0.0.0"
+    networks:
+      - megacorp
+
+  # ── Dash dashboard ─────────────────────────────────────────────────────────
+  dash-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dash
+    ports:
+      - "8050:8050"
+    environment:
+      ADK_API_URL: "http://adk-api:8000"
+    depends_on:
+      - adk-api
+    networks:
+      - megacorp
+
+networks:
+  megacorp:
+    driver: bridge
