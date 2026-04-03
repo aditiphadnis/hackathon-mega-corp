@@ -1,0 +1,14 @@
+services:
+  mcp:
+    build: .
+    command: adk web --host 0.0.0.0 --port 8000
+    ports:
+      - "8060:8000"
+    volumes:
+      - ./ai-agent-use-cases-485910-6440efc64360.json:/secrets/sa-key.json:ro
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/sa-key.json
+      GCP_PROJECT_ID: ai-agent-use-cases-485910
+      BQ_DATASET: hackathon_mega_corp_universe
+      PORT: "8000"
+      HOST: "0.0.0.0"
