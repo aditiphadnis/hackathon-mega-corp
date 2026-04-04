@@ -34,16 +34,25 @@ def quick_btn(icon: str, label: str, index: int) -> html.Button:
 
 # Lookup table — index must match the order quick_btn() calls appear in _sidebar()
 QUICK_QUERIES: dict[int, str] = {
+    # Analytics
     0: "Show me a bar chart of top 10 customers by completed orders",
     1: "Give me a pie chart of payment methods used across all orders",
     2: "Show me a bar chart of sales by product",
     3: "What is our refund rate? Show me a bar chart of the top 10 products by number of refunds.",
     4: "Show me a bar chart of the top 10 customers by number of payment failures. Use the session_details table where `Interaction History` = 'Payment Failed'.",
+    5: "Show me a bar chart of sales by region",
+    # Meetings
     6: "Schedule a meeting with Lex Luthor tomorrow at 2pm",
     7: "Schedule a meeting with Aragorn next Monday at 10am",
     8: "List all my scheduled meetings",
-    9: "Give me a full analysis of Ross Geller — orders, products, payment methods, and refunds.",
+    # Deep Dives
+    9:  "Give me a full analysis of Ross Geller — orders, products, payment methods, and refunds.",
     10: "Who are my customers from the Krypton Core region and what have they been buying?",
+    # Meeting Notes (Vector Search)
+    11: "What was discussed about payment failures?",
+    12: "Find notes related to Krypton Core",
+    13: "What are the action items from the Ross Geller meeting?",
+    14: "What decisions were made about refunds?",
 }
 
 
@@ -114,6 +123,23 @@ def _sidebar() -> html.Aside:
             html.Div("Deep Dives", className="sidebar-label"),
             quick_btn("🔍", "Ross Geller deep dive",   9),
             quick_btn("🚀", "Krypton Core customers", 10),
+
+            # ── Meeting Notes (Vector Search) ─────────────────────────────
+            html.Div(style={"marginTop": "16px"}),
+            html.Div([
+                html.Span("Meeting Notes", className="sidebar-label",
+                          style={"display": "inline-block", "marginBottom": "0"}),
+                html.Span(" · VECTOR SEARCH", style={
+                    "fontFamily": "DM Mono", "fontSize": "8px", "color": "#7b5ea7",
+                    "background": "#1e1428", "border": "1px solid #7b5ea7",
+                    "borderRadius": "20px", "padding": "1px 6px", "marginLeft": "6px",
+                    "verticalAlign": "middle",
+                }),
+            ], style={"marginBottom": "10px"}),
+            quick_btn("🧠", "Payment failure discussions", 11),
+            quick_btn("🌌", "Krypton Core notes",          12),
+            quick_btn("👤", "Ross Geller action items",    13),
+            quick_btn("↩️", "Refund decisions",            14),
         ],
     )
 
@@ -127,8 +153,6 @@ def _main_panel() -> html.Main:
                 html.Span("HOW TO USE",  id="tab-info-btn",  className="chart-tab",        n_clicks=0),
             ], style={"marginBottom": "16px"}),
 
-            # Chart area — dcc.Loading wraps chart-output directly so the
-            # spinner is visible while the render_chart callback executes.
             html.Div(id="chart-area", style={
                 "background": "#111118", "border": "1px solid #2a2a3a",
                 "borderRadius": "10px", "padding": "20px", "minHeight": "380px",
@@ -161,8 +185,8 @@ def _main_panel() -> html.Main:
                        style={"color": "#6b6b80", "lineHeight": "1.7", "marginBottom": "12px"}),
                 dbc.Row([
                     dbc.Col(_info_card("📊 ANALYTICS",  "Sales, top customers, refunds, payment methods, Plotly charts")),
-                    dbc.Col(_info_card("📅 MEETINGS",   "Schedule meetings, manage Google Calendar via MCP")),
-                    dbc.Col(_info_card("📝 NOTES",      "Retrieve and analyse meeting notes from Notion via MCP")),
+                    dbc.Col(_info_card("📅 MEETINGS",   "Schedule meetings, manage Google Calendar via API")),
+                    dbc.Col(_info_card("🧠 NOTES",      "Semantic search across meeting notes via Vertex AI Vector Search")),
                 ]),
             ]),
         ],
@@ -187,12 +211,9 @@ def _chat_panel() -> html.Div:
         style={
             "gridArea": "chat", "background": "#111118", "borderLeft": "1px solid #2a2a3a",
             "display": "flex", "flexDirection": "column",
-            # Must be explicitly 0 so flex children can shrink below their
-            # natural size — without this the panel overflows the grid row.
             "minHeight": "0", "height": "100%",
         },
         children=[
-            # ── Header (fixed height, never shrinks) ──────────────────────
             html.Div(
                 style={"flexShrink": "0", "padding": "14px 18px",
                        "borderBottom": "1px solid #2a2a3a",
@@ -208,12 +229,6 @@ def _chat_panel() -> html.Div:
                                      "marginLeft": "auto"}),
                 ],
             ),
-
-            # ── Message list (grows to fill, scrolls internally) ──────────
-            # parent_style uses flex:1 + minHeight:0 so the Loading wrapper
-            # takes up all remaining space between header and input bar.
-            # overflow:hidden on the wrapper clips the blur overlay correctly
-            # without hiding the scrollbar — the inner div owns the scroll.
             dcc.Loading(
                 id="chat-loading",
                 type="circle",
@@ -225,15 +240,13 @@ def _chat_panel() -> html.Div:
                     id="message-list",
                     style={
                         "flex": "1", "minHeight": "0",
-                        "overflowY": "auto",          # scroll lives here, not on the wrapper
+                        "overflowY": "auto",
                         "padding": "16px",
                         "display": "flex", "flexDirection": "column",
                     },
                     children=[bubble("ai", WELCOME)],
                 ),
             ),
-
-            # ── Input bar (fixed height, never shrinks) ───────────────────
             html.Div(
                 style={"flexShrink": "0", "padding": "14px",
                        "borderTop": "1px solid #2a2a3a",
@@ -285,7 +298,6 @@ def build_layout() -> html.Div:
             _sidebar(),
             _main_panel(),
             _chat_panel(),
-            # Stores
-            dcc.Store(id="session-store"),   # {user_id, session_id} — persisted for tab lifetime
+            dcc.Store(id="session-store"),
         ],
     )
