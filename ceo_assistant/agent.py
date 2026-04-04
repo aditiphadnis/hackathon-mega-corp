@@ -20,28 +20,34 @@ ceo_assistant = Agent(
     description="CEO virtual assistant for Megacorp Universe.",
     instruction=(
         "You are the personal AI assistant to the CEO of Megacorp Universe. "
-        "You have three specialist sub-agents available:\n\n"
-        "1. **bq_agent** — answers questions about orders, sessions, revenue, "
-        "and any other data stored in BigQuery. Use this for any analytical or "
-        "data question.\n"
-        "2. **calendar_agent** — schedules, lists, and manages meetings via "
-        "Google Calendar. Use this whenever the CEO wants to book, view, or "
-        "change calendar events.\n"
-        "3. **notes_agent** — retrieves and analyses meeting notes stored in "
-        "Notion. Use this when the CEO asks about past meeting summaries, "
-        "action items, or decisions.\n\n"
-        "Route each request to the most appropriate sub-agent. If a request "
-        "spans multiple agents (e.g. 'schedule a follow-up based on last "
-        "week's meeting notes'), coordinate them in sequence. Always respond "
-        "in a concise, executive-friendly tone."
+        "You have three specialist sub-agents:\n\n"
+        "1. **bq_agent** — BigQuery data: orders, sessions, revenue, customers.\n"
+        "2. **calendar_agent** — Google Calendar: schedule, view, edit meetings.\n"
+        "3. **notes_agent** — Notion: retrieve and analyse meeting notes.\n\n"
+        "Route each request to the best sub-agent. For multi-step requests "
+        "(e.g. 'analyse Ross Geller then schedule a meeting'), coordinate "
+        "sub-agents in sequence.\n\n"
+        "CHART OUTPUT RULE — you MUST include a plotly JSON block whenever:\n"
+        "  • The user explicitly asks for a chart or visualisation, OR\n"
+        "  • The response contains a ranked or comparative list of items with numeric values "
+        "(e.g. top customers, refunds by product, sales by region, failures by customer).\n\n"
+        "When the rule applies, respond with a text summary AND this EXACT block:\n\n"
+        "```plotly\n"
+        '{"chart_type": "bar", "title": "Top 10 Customers", "x": ["Name1", "Name2"], "y": [33, 32]}\n'
+        "```\n\n"
+        "chart_type must be one of: bar | line | pie\n"
+        "Use 'labels' and 'values' instead of 'x' and 'y' for pie charts.\n"
+        "Keep x labels short (≤20 chars). Round numeric values to 2 decimal places.\n"
+        "Never say you cannot generate a chart.\n\n"
+        "Always respond in a concise, executive-friendly tone."
+
     ),
     sub_agents=[bq_agent, calendar_agent, notes_agent],
 )
 
-# Required by `adk web` and `adk api_server`
 root_agent = ceo_assistant
 
-# ── Runner (for direct programmatic use / testing) ────────────────────────────
+# ── Runner (for local testing) ────────────────────────────────────────────────
 
 session_service = InMemorySessionService()
 runner = Runner(
@@ -57,9 +63,7 @@ SESSION_ID = str(uuid.uuid4())
 
 async def init_session() -> None:
     await session_service.create_session(
-        app_name=APP_NAME,
-        user_id=USER_ID,
-        session_id=SESSION_ID,
+        app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID,
     )
 
 
@@ -70,9 +74,7 @@ async def chat(user_message: str) -> str:
     )
     response_text = ""
     async for event in runner.run_async(
-        user_id=USER_ID,
-        session_id=SESSION_ID,
-        new_message=content,
+        user_id=USER_ID, session_id=SESSION_ID, new_message=content,
     ):
         if event.is_final_response() and event.content and event.content.parts:
             response_text = "".join(

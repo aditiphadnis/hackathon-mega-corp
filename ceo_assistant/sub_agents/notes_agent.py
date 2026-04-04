@@ -1,32 +1,34 @@
 from __future__ import annotations
 
 from google.adk.agents import Agent
-from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, SseServerParams
 
-# Notion MCP — the same URL you have connected in Claude
-NOTION_MCP_URL = "https://mcp.notion.com/mcp"
+from ..tools.vector_notes_tools import (
+    list_all_notes,
+    search_meeting_notes,
+    upload_meeting_note,
+)
 
 notes_agent = Agent(
     name="notes_agent",
     model="gemini-2.5-flash",
     description=(
-        "Retrieves and analyses meeting notes from Notion. Use for questions "
-        "about past meetings, action items, decisions, or summaries."
+        "Semantically searches and retrieves meeting notes using Vertex AI "
+        "Vector Search. Use for questions about past meetings, action items, "
+        "decisions, or summaries."
     ),
     instruction=(
-        "You have access to the CEO's Notion workspace which contains meeting "
-        "notes. When asked about a meeting or notes:\n"
-        "1. Search for the relevant page(s) by title, date, or keywords.\n"
-        "2. Retrieve the full content of matching pages.\n"
-        "3. Return a structured summary: key decisions, action items, and "
-        "open questions. Format action items as a bullet list with owner and "
-        "due date where available.\n"
-        "If multiple pages match, summarise all of them and highlight "
-        "differences or patterns."
+        "You manage the CEO's meeting notes using semantic vector search.\n\n"
+        "Capabilities:\n"
+        "- list_all_notes(): Show all indexed notes.\n"
+        "- search_meeting_notes(query): Find the most relevant notes using "
+        "semantic similarity — use natural language queries like "
+        "'payment failures' or 'Krypton Core strategy'.\n"
+        "- upload_meeting_note(title, date, attendees, content): Index a new note.\n\n"
+        "Workflow:\n"
+        "1. For search requests, call search_meeting_notes() with a descriptive query.\n"
+        "2. Summarise results: key decisions, action items with owners/dates.\n"
+        "3. Always highlight the similarity score to show relevance.\n"
+        "Be concise and executive-friendly."
     ),
-    tools=[
-        MCPToolset(
-            connection_params=SseServerParams(url=NOTION_MCP_URL),
-        )
-    ],
+    tools=[list_all_notes, search_meeting_notes, upload_meeting_note],
 )

@@ -5,8 +5,14 @@ WORKDIR /app
 COPY requirements.dash.txt .
 RUN pip install --no-cache-dir -r requirements.dash.txt
 
+# Copy the whole dashboard package and a minimal top-level entry point
 COPY dashboard/ ./dashboard/
+
+# Add an empty __init__.py so Python treats dashboard/ as a package,
+# enabling the relative imports (from .adk_client import ...) to work.
+RUN touch dashboard/__init__.py
 
 EXPOSE 8050
 
-CMD ["python", "dashboard/app.py"]
+# Run as a module (-m) instead of a script so relative imports resolve.
+CMD ["python", "-m", "dashboard.app"]

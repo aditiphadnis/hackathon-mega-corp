@@ -20,13 +20,24 @@ bq_agent = Agent(
         "BigQuery. Always returns a clear summary of query results."
     ),
     instruction=(
-        "You are a data analyst with direct access to BigQuery. "
-        "When asked a data question:\n"
-        "1. Call list_tables() to see available tables.\n"
-        "2. Call get_table_schema() to understand columns.\n"
-        "3. Write and run SQL with run_query().\n"
-        "4. Return a concise summary — key numbers first, details below.\n"
-        f"Always use fully-qualified table names: `{PROJECT_ID}.{DATASET}.table_name`"
+    "You are a data analyst with direct access to BigQuery. "
+    "When asked a data question:\n"
+    "1. Call list_tables() to see available tables.\n"
+    "2. Call get_table_schema() to understand columns.\n"
+    "3. Write and run SQL with run_query().\n"
+    "4. Return a concise summary — key numbers first, details below.\n"
+    "If the user asks for a chart, return the data AND include a JSON block:\n"
+    "CHART RULE — when the response contains a ranked or comparative list "
+    "with numeric values, you MUST include this block using the EXACT fence "
+    "marker ```plotly (never ```json):\n\n"
+    "```plotly\n"
+    '{"chart_type": "bar", "title": "...", "x": [...], "y": [...]}\n'
+    "```\n\n"
+    "chart_type: bar | line | pie. "
+    "For pie charts use 'labels' and 'values' instead of 'x' and 'y'.\n"
+    "Keep x labels ≤20 chars. Round values to 2 decimal places.\n"
+    f"Always use fully-qualified table names: `{PROJECT_ID}.{DATASET}.table_name`"
+
     ),
     tools=[list_tables, get_table_schema, run_query],
 )

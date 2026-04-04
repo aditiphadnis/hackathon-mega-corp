@@ -1,31 +1,38 @@
 services:
 
-  # ── ADK API server ─────────────────────────────────────────────────────────
   adk-api:
     build:
       context: .
       dockerfile: Dockerfile.adk
-    command: adk api_server --host 0.0.0.0 --port 8000 agent
     ports:
       - "8000:8000"
     volumes:
       - ./ai-agent-use-cases-485910-6440efc64360.json:/secrets/sa-key.json:ro
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: /secrets/sa-key.json
-      GCP_PROJECT_ID: ai-agent-use-cases-485910
-      BQ_DATASET: hackathon_mega_corp_universe
-      PORT: "8000"
-      HOST: "0.0.0.0"
+      GCP_PROJECT_ID:                 ai-agent-use-cases-485910
+      BQ_DATASET:                     hackathon_mega_corp_universe
+      GOOGLE_CLOUD_PROJECT:           ai-agent-use-cases-485910
+      GOOGLE_CLOUD_LOCATION:          us-central1
+      GOOGLE_GENAI_USE_VERTEXAI:      "true"
+      GOOGLE_CLIENT_ID:               ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET:           ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REFRESH_TOKEN:           ${GOOGLE_REFRESH_TOKEN}
+      NOTION_API_KEY:                 ${NOTION_API_KEY}
+      NOTES_BUCKET:                   megacorp-meeting-notes
+      VECTOR_INDEX_ID:                ${VECTOR_INDEX_ID}
+      VECTOR_ENDPOINT_ID:             ${VECTOR_ENDPOINT_ID}
+      GOOGLE_CALENDAR_ID:             primary
+      CEO_EMAIL:                      ${CEO_EMAIL}
     networks:
       - megacorp
 
-  # ── Dash dashboard ─────────────────────────────────────────────────────────
   dash-app:
     build:
       context: .
       dockerfile: Dockerfile.dash
     ports:
-      - "8050:8050"
+      - "8060:8050"
     environment:
       ADK_API_URL: "http://adk-api:8000"
     depends_on:

@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --bg:       #0a0a0f;
+  --surface:  #111118;
+  --surface2: #18181f;
+  --border:   #2a2a3a;
+  --accent:   #e8c468;
+  --accent2:  #7b5ea7;
+  --danger:   #e05555;
+  --success:  #4caf7d;
+  --text:     #e8e8f0;
+  --muted:    #6b6b80;
+}
+
+* { box-sizing: border-box; }
+
+body, html {
+  background: var(--bg) !important;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#_dash-app-content,
+.container-fluid {
+  height: 100%;
+  padding: 0 !important;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── Sidebar stat cards ─────────────────────────────────────────────────── */
+.stat-card {
+  background:    var(--surface2);
+  border:        1px solid var(--border);
+  border-radius: 8px;
+  padding:       12px 14px;
+  margin-bottom: 8px;
+}
+.stat-card .sc-label {
+  color:          var(--muted);
+  font-size:      10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family:    'DM Mono', monospace;
+}
+.stat-card .sc-value {
+  font-family:    'Bebas Neue', sans-serif;
+  font-size:      28px;
+  color:          var(--accent);
+  letter-spacing: 1px;
+  line-height:    1.1;
+  margin-top:     2px;
+}
+.stat-card .sc-sub {
+  color:      var(--muted);
+  font-size:  10px;
+  margin-top: 2px;
+}
+
+/* ── Sidebar quick-action buttons ───────────────────────────────────────── */
+.quick-btn {
+  display:        block;
+  width:          100%;
+  background:     var(--surface2);
+  border:         1px solid var(--border);
+  border-radius:  6px;
+  color:          var(--text);
+  font-family:    'DM Sans', sans-serif;
+  font-size:      12px;
+  padding:        9px 12px;
+  text-align:     left;
+  cursor:         pointer;
+  margin-bottom:  6px;
+  transition:     all 0.15s;
+  line-height:    1.4;
+}
+.quick-btn:hover {
+  border-color: var(--accent);
+  color:        var(--accent);
+  background:   #1a1a10;
+}
+
+/* ── Section labels ─────────────────────────────────────────────────────── */
+.sidebar-label {
+  font-family:    'DM Mono', monospace;
+  font-size:      9px;
+  letter-spacing: 2px;
+  color:          var(--muted);
+  text-transform: uppercase;
+  margin-bottom:  10px;
+}
+
+/* ── Chat bubbles ───────────────────────────────────────────────────────── */
+.msg {
+  max-width:     92%;
+  padding:       10px 14px;
+  border-radius: 10px;
+  font-size:     13px;
+  line-height:   1.55;
+  margin-bottom: 10px;
+}
+.msg-user {
+  background:               #1e1e2e;
+  border:                   1px solid var(--border);
+  margin-left:              auto;
+  border-bottom-right-radius: 3px;
+}
+.msg-ai {
+  background:              #141420;
+  border:                  1px solid #22223a;
+  border-bottom-left-radius: 3px;
+}
+.msg-system {
+  background:    #0f1a12;
+  border:        1px solid #2a3a2a;
+  color:         var(--success);
+  font-family:   'DM Mono', monospace;
+  font-size:     11px;
+  text-align:    center;
+  border-radius: 6px;
+  padding:       6px 12px;
+  margin:        0 auto;
+  max-width:     80%;
+}
+.msg-sender {
+  font-family:    'DM Mono', monospace;
+  font-size:      9px;
+  color:          var(--accent);
+  letter-spacing: 1px;
+  margin-bottom:  5px;
+}
+
+/* ── Fail icon badge (replaces ⚠️ emoji) ────────────────────────────────── */
+.warn-icon {
+  display:        inline-block;
+  width:          16px;
+  height:         16px;
+  background:     var(--danger);
+  color:          #fff;
+  font-size:      10px;
+  font-weight:    700;
+  line-height:    16px;
+  text-align:     center;
+  border-radius:  3px;
+  margin-right:   6px;
+  vertical-align: middle;
+  font-family:    'DM Mono', monospace;
+}
+
+/* ── Main panel tab buttons ─────────────────────────────────────────────── */
+.chart-tab {
+  background:     var(--surface);
+  border:         1px solid var(--border);
+  border-radius:  6px;
+  color:          var(--muted);
+  font-family:    'DM Mono', monospace;
+  font-size:      11px;
+  padding:        6px 12px;
+  cursor:         pointer;
+  transition:     all 0.15s;
+  display:        inline-block;
+  margin-right:   8px;
+}
+.chart-tab.active,
+.chart-tab:hover {
+  border-color: var(--accent);
+  color:        var(--accent);
+}
+
+/* ── Pulse animation (online indicator) ─────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
