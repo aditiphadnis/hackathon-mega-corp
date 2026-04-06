@@ -37,7 +37,7 @@ QUICK_QUERIES: dict[int, str] = {
     # Analytics
     0: "Show me a bar chart of top 10 customers by completed orders",
     1: "Give me a pie chart of payment methods used across all orders",
-    2: "Show me a bar chart of sales by product",
+    2: "Show me a bar chart of number of sales by product",
     3: "What is our refund rate? Show me a bar chart of the top 10 products by number of refunds.",
     4: "Show me a bar chart of the top 10 customers by number of payment failures. Use the session_details table where `Interaction History` = 'Payment Failed'.",
     5: "Show me a bar chart of sales by region",

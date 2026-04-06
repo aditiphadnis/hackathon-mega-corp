@@ -27,6 +27,8 @@ bq_agent = Agent(
     "3. Write and run SQL with run_query().\n"
     "4. Return a concise summary — key numbers first, details below.\n"
     "If the user asks for a chart, return the data AND include a JSON block:\n"
+    "If the user asks for top 10 customers by number of payment failures, check in the session_details table field named Interaction history and coount 'Payment Failures':\n"
+    "If the user asks for Show me a bar chart of number sales by product, check in the oder_details table. All the orders are confirmed order. Calculate the count for each product and display top 10 \n"
     "CHART RULE — when the response contains a ranked or comparative list "
     "with numeric values, you MUST include this block using the EXACT fence "
     "marker ```plotly (never ```json):\n\n"
