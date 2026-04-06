@@ -13,6 +13,18 @@ def _get_bq_client() -> bigquery.Client:
     return bigquery.Client(project=PROJECT_ID)
 
 
+def _resolve_table(table_name: str) -> str:
+    """Resolve table name to fully qualified, avoiding double-qualification."""
+    # Already fully qualified
+    if table_name.startswith(f"{PROJECT_ID}."):
+        return table_name
+    # Has dataset but not project
+    if "." in table_name:
+        return f"{PROJECT_ID}.{table_name}"
+    # Just table name
+    return f"{PROJECT_ID}.{DATASET}.{table_name}"
+
+
 def list_tables() -> list[str]:
     """List all available tables in the dataset."""
     bq = _get_bq_client()
@@ -23,7 +35,7 @@ def list_tables() -> list[str]:
 def get_table_schema(table_name: str) -> str:
     """Get the schema (column names and types) for a given table."""
     bq = _get_bq_client()
-    table = bq.get_table(f"{PROJECT_ID}.{DATASET}.{table_name}")
+    table = bq.get_table(_resolve_table(table_name))
     schema_info = "\n".join(
         f"  {field.name}: {field.field_type}" for field in table.schema
     )

@@ -31,6 +31,7 @@ ceo_assistant = Agent(
         "  • The user explicitly asks for a chart or visualisation, OR\n"
         "  • The response contains a ranked or comparative list of items with numeric values "
         "(e.g. top customers, refunds by product, sales by region, failures by customer).\n\n"
+        "When user asks about failed payment check the Interaction History field in the session_details table. If it says payment failed, then count that session.\n\n"
         "When the rule applies, respond with a text summary AND this EXACT block:\n\n"
         "```plotly\n"
         '{"chart_type": "bar", "title": "Top 10 Customers", "x": ["Name1", "Name2"], "y": [33, 32]}\n'

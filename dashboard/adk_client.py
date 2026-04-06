@@ -10,24 +10,40 @@ APP_NAME    = "ceo_assistant"
 
 
 def create_session(user_id: str) -> str:
-    """Register a new session with ADK and return the session_id.
-
-    Stored in dcc.Store and reused across all turns so the agent
-    retains conversation context within a browser tab.
-    """
+    """Register a new session with ADK and return the session_id."""
     session_id = str(uuid.uuid4())
     try:
-        requests.post(
+        resp = requests.post(
             f"{ADK_API_URL}/apps/{APP_NAME}/users/{user_id}/sessions/{session_id}",
             timeout=10,
         )
+        resp.raise_for_status()
     except requests.RequestException:
         pass
     return session_id
 
 
+def _ensure_session(user_id: str, session_id: str) -> None:
+    """Ensure the session exists — recreate it if Cloud Run lost it."""
+    try:
+        resp = requests.get(
+            f"{ADK_API_URL}/apps/{APP_NAME}/users/{user_id}/sessions/{session_id}",
+            timeout=5,
+        )
+        if resp.status_code == 404:
+            requests.post(
+                f"{ADK_API_URL}/apps/{APP_NAME}/users/{user_id}/sessions/{session_id}",
+                timeout=10,
+            )
+    except requests.RequestException:
+        pass
+
+
 def run_agent(user_id: str, session_id: str, message: str) -> str:
     """POST to /run and return the last model text from the event list."""
+    # Always ensure session exists before running — critical for Cloud Run
+    _ensure_session(user_id, session_id)
+
     resp = requests.post(
         f"{ADK_API_URL}/run",
         json={
