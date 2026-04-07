@@ -1,6 +1,7 @@
 # Mega-Corp · CEO Command Center
 
-> An AI-powered virtual assistant for the CEO of Mega-Corp Universe — built on Google ADK, a multi-agent architecture, MCP tooling, and a real-time Dash dashboard.
+> An AI-powered virtual assistant for the CEO of Mega-Corp Universe — built on Google ADK, a multi-agent architecture, MCP tooling, and a real-time Dash dashboard. 
+> Access the application UI here- https://dash-app-389816935482.us-central1.run.app/ 
 
 ---
 
@@ -74,7 +75,7 @@ CEO Assistant Agent  ── orchestrator (Gemini 2.5 Flash)
 | LLM | Gemini 2.5 Flash |
 | Agent framework | Google ADK |
 | Agent-to-agent routing | ADK native sub-agent delegation |
-| External tools | MCP (Google Calendar, Notion) |
+| External tools | Custom Tools (Google Calendar, Google Cloud Storage Notes Analyser) |
 | Meeting notes search | Vertex AI Vector Search |
 | Data warehouse | BigQuery |
 | Dashboard | Dash + Plotly + Dash Bootstrap Components |
@@ -93,13 +94,15 @@ hackathon-mega-corp/
 │   │   ├── __init__.py
 │   │   ├── bq_agent.py           # BigQuery data agent
 │   │   ├── calendar_agent.py     # Google Calendar MCP agent
-│   │   └── notes_agent.py        # Notion / notes MCP agent
+│   │   └── notes_agent.py        # Analyses Notes from Cloud Storage 
 │   └── tools/
-│       └── bq_tools.py           # list_tables, get_schema, run_query
+│       └── bq_tools.py           # list_tables, get_schema, run_query  
+│       └── calendar_tools.py.py  # Check free slots, schedule meetings etc
+│       └── Vector_notes_tools.py # fetch relevant notes , summarize and add notes. 
 ├── dashboard/
 │   └── app.py                    # Dash app — UI + ADK API client
 ├── Dockerfile.adk
-├── Dockerfile.dash
+├── Dockerfile.dash 
 ├── docker-compose.yml
 ├── requirements.txt              # ADK service dependencies
 └── requirements.dash.txt         # Dash service dependencies
@@ -126,13 +129,13 @@ hackathon-mega-corp/
 **1. Clone the repo**
 
 ```bash
-git clone https://github.com/your-org/hackathon-mega-corp.git
+git clone https://github.com/aditiphadnis/hackathon-mega-corp.git
 cd hackathon-mega-corp
 ```
 
 **2. Add your service account key**
 
-Place your GCP service account JSON at the project root:
+Place your GCP service account JSON at the project root (name the project):
 
 ```
 ai-agent-use-cases-XXXXXX-XXXXXXXXXXXX.json
@@ -195,7 +198,7 @@ python dashboard/app.py
 **5. Open the dashboard**
 
 ```
-http://localhost:8050
+http://localhost:8060
 ```
 
 ---
